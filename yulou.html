@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嵌入式开发 - 个人项目展示</title>
+    <!-- 引入 Highlight.js 用于代码高亮 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --nav-bg: #2c3e50;
+            --text-main: #333;
+            --accent: #3498db;
+            --code-bg: #282c34;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* 侧边导航栏 */
+        nav {
+            width: 260px;
+            background-color: var(--nav-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        nav h1 { font-size: 1.5rem; margin-bottom: 10px; border-bottom: 1px solid #4a627a; padding-bottom: 10px; }
+        nav p { font-size: 0.9rem; color: #bdc3c7; margin-bottom: 30px; }
+
+        .nav-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover { background-color: #34495e; }
+        .nav-item.active { background-color: var(--accent); }
+
+        /* 主内容区域 */
+        main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .project-section {
+            display: none; /* 默认隐藏 */
+            animation: fadeIn 0.5s ease;
+        }
+
+        .project-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { font-size: 2rem; margin-bottom: 20px; border-left: 5px solid var(--accent); padding-left: 15px; }
+        
+        .meta-info { color: #7f8c8d; margin-bottom: 20px; font-size: 0.95rem; }
+
+        /* 内容模块 */
+        .content-block {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .content-block h3 { margin-bottom: 15px; color: #2c3e50; }
+
+        /* 图片与视频样式 */
+        .media-box {
+            width: 100%;
+            background: #eee;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .media-box img, .media-box video {
+            max-width: 100%;
+            max-height: 500px;
+            display: block;
+        }
+
+        /* 代码块样式覆盖 */
+        pre {
+            border-radius: 8px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav>
+        <h1>你的名字</h1>
+        <p>嵌入式开发工程师 | STM32 | Linux</p>
+        
+        <!-- 导航列表，data-id 对应下面 section 的 id -->
+        <div class="nav-item active" onclick="switchProject('proj1')">项目一：智能恒温箱</div>
+        <div class="nav-item" onclick="switchProject('proj2')">项目二：OLED 频谱仪</div>
+        <div class="nav-item" onclick="switchProject('proj3')">项目三：FreeRTOS 小车</div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main>
+        <!-- 项目 1 -->
+        <section id="proj1" class="project-section active">
+            <h2>智能恒温箱控制系统</h2>
+            <div class="meta-info">基于 STM32F407 | HAL库 | 2024.02</div>
+
+            <div class="content-block">
+                <h3>项目简介</h3>
+                <p>这是一个使用 STM32 制作的闭环温度控制系统。使用 NTC 热敏电阻采样，通过 PID 算法控制半导体制冷片(TEC12706)，实现精度在 ±0.5°C 内的恒温控制。主要应用于菌种培养。</p>
+            </div>
+
+            <div class="content-block">
+                <h3>实物展示</h3>
+                <p>这里放置你的实物接线图或最终成品图。</p>
+                <div class="media-box">
+                    <!-- 替换 src 为你的图片路径 -->
+                    <img src="https://placehold.co/800x400/2c3e50/ffffff?text=项目实物图" alt="实物图">
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>核心代码 (main.c)</h3>
+                <pre><code class="language-c">#include "main.h"
+#include "pid.h"
+
+// 全局变量
+float CurrentTemp = 25.0f;
+float TargetTemp = 37.0f;
+PID_HandleTypeDef hpid;
+
+int main(void)
+{
+    HAL_Init();
+    SystemClock_Config();
+    MX_ADC1_Init();
+    MX_USART1_UART_Init();
+    
+    PID_Init(&hpid, 2.0f, 0.5f, 0.1f); // Kp, Ki, Kd
+
+    while (1)
+    {
+        // 1. 读取 ADC 转换为温度
+        CurrentTemp = Get_Temperature();
+        
+        // 2. PID 计算
+        float pwm_out = PID_Calc(&hpid, TargetTemp, CurrentTemp);
+        
+        // 3. 输出 PWM 控制 TEC
+        __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, (uint32_t)pwm_out);
+        
+        HAL_Delay(100);
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- 项目 2 -->
+        <section id="proj2" class="project-section">
+            <h2>OLED 音乐频谱显示器</h2>
+            <div class="meta-info">基于 ESP32 | I2S 接口 | 2023.10</div>
+
+            <div class="content-block">
+                <h3>项目简介</h3>
+                <p>利用 ESP32 的 I2S 接口读取 MAX4466 麦克风模块的数据，通过 FFT (快速傅里叶变换) 将时域信号转换为频域信号，最后在 0.96寸 SSD1306 OLED 屏幕上以柱状图形式显示。</p>
+            </div>
+
+            <div class="content-block">
+                <h3>演示视频</h3>
+                <div class="media-box">
+                    <!-- 替换 src 为你的视频路径 -->
+                    <video controls>
+                        <source src="your-video.mp4" type="video/mp4">
+                        您的浏览器不支持视频播放。
+                    </video>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3>核心代码 (fft.c)</h3>
+                <pre><code class="language-c">#include "arduinoFFT.h"
+
+#define SAMPLES 128
+#define SAMPLING_FREQUENCY 10000
+
+arduinoFFT FFT = arduinoFFT();
+double vReal[SAMPLES];
+double vImag[SAMPLES];
+
+void loop() {
+    // 采样
+    for (int i = 0; i < SAMPLES; i++) {
+        vReal[i] = analogRead(A0);
+        vImag[i] = 0;
+        delayMicroseconds(1000000 / SAMPLING_FREQUENCY);
+    }
+
+    // FFT 计算
+    FFT.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+    FFT.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
+    FFT.ComplexToMagnitude(vReal, vImag, SAMPLES);
+
+    // 显示到 OLED
+    DisplayBars(vReal);
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- 项目 3 -->
+        <section id="proj3" class="project-section">
+            <h2>FreeRTOS 蓝牙小车</h2>
+            <div class="meta-info">基于 STM32F103 | FreeRTOS v10 | HC-05</div>
+
+            <div class="content-block">
+                <h3>项目简介</h3>
+                <p>移植了 FreeRTOS 实时操作系统。创建了三个任务：1. LED 心跳任务；2. USART 蓝牙指令接收任务；3. 电机控制任务。使用队列(Queue)进行任务间通信。</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 1. 初始化代码高亮
+        hljs.highlightAll();
+
+        // 2. 项目切换逻辑
+        function switchProject(id) {
+            // 隐藏所有 section
+            const sections = document.querySelectorAll('.project-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // 显示选中的 section
+            document.getElementById(id).classList.add('active');
+
+            // 更新导航栏高亮样式
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // 这里的 event.target 就是点击的那个 div
+            event.target.classList.add('active');
+
+            // 切换后重新渲染代码高亮（防止切换后样式丢失）
+            document.querySelectorAll('pre code').forEach((el) => {
+                hljs.highlightElement(el);
+            });
+        }
+    </script>
+</body>
+</html>
